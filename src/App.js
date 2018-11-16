@@ -34,6 +34,18 @@ const styles = {
   }
 };
 
+const Test = ({ classes }) => (
+  <Button
+    variant="contained"
+    size="large"
+    color="primary"
+    className={classes.button}
+    target="_blank"
+    href="http://www.youtube.com">
+    Watch Now
+  </Button>
+);
+
 class App extends Component {
 
   state = {
@@ -47,7 +59,6 @@ class App extends Component {
 
   handleSubmit = () => {
     this.setState({
-      open: false,
       liveVideoAvailable: true
     })
   };
@@ -57,7 +68,7 @@ class App extends Component {
   };
 
   render() {
-    const { open } = this.state;
+    const { open, liveVideoAvailable } = this.state;
     const { classes } = this.props;
 
     return (
@@ -72,22 +83,26 @@ class App extends Component {
               onClick={this.handleClickOpen}>
               One
             </Button>
+          </li>
+          <li>
             <Button
               variant="contained"
               size="large"
-              color="secondary"
+              color="primary"
               className={classes.button}
-              onClick={this.handleClickOpen}>
-              One
-            </Button>
-          </li>
-          <li>
-            <Button variant="contained" size="large" color="primary" className={classes.button}>
+              target="_blank"
+              href="http://www.youtube.com">
               Two
             </Button>
           </li>
           <li>
-            <Button variant="contained" size="large" color="primary" className={classes.button}>
+            <Button
+              variant="contained"
+              size="large"
+              color="primary"
+              className={classes.button}
+              target="_blank"
+              href="http://www.youtube.com">
               Three
             </Button>
           </li>
@@ -95,34 +110,42 @@ class App extends Component {
 
         <Dialog open={open} onClose={this.handleClose}>
           <DialogTitle>Dialog</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              This is the dialog
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Full name"
-              type="text"
-              fullWidth
-              />
-            <TextField
-              margin="dense"
-              id="viewers"
-              label="Number of people watching"
-              type="tel"
-              fullWidth
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Submit
-            </Button>
-          </DialogActions>
+
+          {liveVideoAvailable ?
+            <DialogContent><Test classes={classes}/></DialogContent> :
+            <div>
+              <DialogContent>
+                <DialogContentText>
+                  This is the dialog
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Full name"
+                  type="text"
+                  fullWidth
+                  required
+                />
+                <TextField
+                  margin="dense"
+                  id="viewers"
+                  label="Number of people watching"
+                  type="tel"
+                  fullWidth
+                  required
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleClose} color="primary">
+                Cancel
+                </Button>
+                <Button onClick={this.handleSubmit} color="primary">
+                Submit
+                </Button>
+              </DialogActions>
+            </div>
+          }
         </Dialog>
       </div>
     );
