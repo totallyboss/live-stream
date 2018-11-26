@@ -9,6 +9,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+const API = "http://localhost:4000/links";
+
 const styles = {
   '@global body': {
     backgroundColor: '#EEEEEE',
@@ -34,7 +36,7 @@ const styles = {
   }
 };
 
-const Test = ({ classes }) => (
+const LiveStreamButton = ({ classes }) => (
   <Button
     variant="contained"
     size="large"
@@ -50,14 +52,38 @@ class App extends Component {
 
   state = {
     open: false,
-    liveVideoAvailable: false
+    liveVideoAvailable: false,
+    isLoading: false,
+    name: '',
+    viewers: ''
+  };
+
+  postData = (data) => {
+    let options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    };
+    return fetch(API, options)
+      .then((response) => response.json)
   };
 
   handleClickOpen = () => {
     this.setState({ open: true });
   };
 
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+  };
+
   handleSubmit = () => {
+    const { name, viewers } = this.state;
+
+    this.postData({"name": name, "viewers": viewers});
     this.setState({
       liveVideoAvailable: true
     })
@@ -112,7 +138,7 @@ class App extends Component {
           <DialogTitle>Dialog</DialogTitle>
 
           {liveVideoAvailable ?
-            <DialogContent><Test classes={classes}/></DialogContent> :
+            <DialogContent><LiveStreamButton classes={classes}/></DialogContent> :
             <div>
               <DialogContent>
                 <DialogContentText>
@@ -121,19 +147,21 @@ class App extends Component {
                 <TextField
                   autoFocus
                   margin="dense"
-                  id="name"
+                  name="name"
                   label="Full name"
                   type="text"
                   fullWidth
                   required
+                  onChange={this.handleChange}
                 />
                 <TextField
                   margin="dense"
-                  id="viewers"
+                  name="viewers"
                   label="Number of people watching"
                   type="tel"
                   fullWidth
                   required
+                  onChange={this.handleChange}
                 />
               </DialogContent>
               <DialogActions>
