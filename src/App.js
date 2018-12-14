@@ -55,7 +55,8 @@ class App extends Component {
     liveVideoAvailable: false,
     isLoading: false,
     name: '',
-    viewers: ''
+    viewers: '',
+    now: new Date(),
   };
 
   postData = (data) => {
@@ -81,9 +82,13 @@ class App extends Component {
   };
 
   handleSubmit = () => {
-    const { name, viewers } = this.state;
+    const { name, viewers, now } = this.state;
 
-    this.postData({"name": name, "viewers": viewers});
+    this.setState({
+      now: new Date(),
+    });
+
+    this.postData({"name": name, "viewers": viewers, "time-date": now });
     this.setState({
       liveVideoAvailable: true
     })
