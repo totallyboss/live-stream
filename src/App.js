@@ -9,24 +9,54 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+
 const API = "http://localhost:4000/links";
 
 const styles = {
   '@global body': {
-    backgroundColor: '#EEEEEE',
-    color: '#444'
+    backgroundColor: '#FAFBF5',
+    color: '#000',
   },
   root: {
-    textAlign: 'left'
+    textAlign: 'center',
+    padding: '20px',
   },
   list: {
     listStyle: 'none',
     margin: '0',
     padding: '0',
 
-    'li': {
-      margin: '0 0 20px 0'
+    '& li': {
+      margin: '0 0 20px 0',
     }
+  },
+  streams: {
+    listStyle: 'none',
+    margin: '0',
+    padding: '0',
+  },
+  item: {
+    margin: '20px',
+    display: 'inline-block',
+    width: '250px',
+    height: '470px',
+    border: 'solid 1px #C0C0C0',
+    borderRadius: '4px',
+    overflow: 'hidden',
+    boxShadow: '0',
+    transition: '0.5s',
+
+    '&:hover': {
+      boxShadow: '0 15px 50px #A6A6A6',
+    },
+  },
+  details: {
+    padding: '20px',
+    height: '280px'
+  },
+  image: {
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
   button: {
     margin: '20px',
@@ -104,38 +134,29 @@ class App extends Component {
 
     return (
       <div className={classes.root}>
-        <ul className={classes.list}>
-          <li>
-            <Button
-              variant="contained"
-              size="large"
-              color="secondary"
-              className={classes.button}
-              onClick={this.handleClickOpen}>
-              One
-            </Button>
+        <h1>Wellington City Congregation</h1>
+
+        <ul className={classes.streams}>
+          <li className={classes.item}>
+            <div className={classes.details}>
+              <h2>LIVE</h2>
+              <p>Live streaming video of today's meeting</p>
+            </div>
+            <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_2_md.jpg' />
           </li>
-          <li>
-            <Button
-              variant="contained"
-              size="large"
-              color="primary"
-              className={classes.button}
-              target="_blank"
-              href="http://www.youtube.com">
-              Two
-            </Button>
+          <li className={classes.item}>
+            <div className={classes.details}>
+              <h2>MIDWEEK</h2>
+              <p>Treasures from God's word, Apply yourself to the Field Ministry, Living as Christians</p>
+            </div>
+            <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_3_md.jpg' />
           </li>
-          <li>
-            <Button
-              variant="contained"
-              size="large"
-              color="primary"
-              className={classes.button}
-              target="_blank"
-              href="http://www.youtube.com">
-              Three
-            </Button>
+          <li className={classes.item}>
+            <div className={classes.details}>
+              <h2>WEEKEND</h2>
+              <p>Public talk and Watchtower Study</p>
+            </div>
+            <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_1_md.jpg' />
           </li>
         </ul>
 
