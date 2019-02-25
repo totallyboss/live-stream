@@ -48,6 +48,7 @@ const styles = {
 
     '&:hover': {
       boxShadow: '0 15px 50px #A6A6A6',
+      cursor: 'pointer',
     },
   },
   details: {
@@ -66,26 +67,130 @@ const styles = {
   }
 };
 
-const LiveStreamButton = ({ classes }) => (
-  <Button
-    variant="contained"
-    size="large"
-    color="primary"
-    className={classes.button}
-    target="_blank"
-    href="http://www.youtube.com">
-    Watch Now
-  </Button>
-);
+const VerifiedDialog = ({ classes, type, handleClose }) => {
+  const liveLink = 'http://tiny.cc/wgtncitylivestream';
+  const midweekLink = 'http://tiny.cc/wgtncitymidweek';
+  const weekendLink = 'http://tiny.cc/wgtncityweekend';
+
+  let linkFinal;
+
+  if(type == 'live') {
+    linkFinal = liveLink
+  };
+
+  if(type == 'midweek') {
+    linkFinal = midweekLink
+  };
+
+  if(type == 'weekend') {
+    linkFinal = weekendLink
+  };
+
+  return (
+    <DialogContent>
+      <Button
+        onClick={handleClose}
+        variant="contained"
+        size="large"
+        color="primary"
+        target="_blank"
+        className={classes.button}
+        href={linkFinal}>
+        Watch Now
+      </Button>
+    </DialogContent>
+  );
+};
+
+const Form = ({ classes, type, onChange, handleClose, handleSubmit }) => {
+
+  if (type == 'live') {
+    return (
+      <div>
+        <DialogContent>
+          <DialogContentText>
+            This is the dialog
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="name"
+            label="Full name"
+            type="text"
+            fullWidth
+            required
+            onChange={onChange}
+          />
+          <TextField
+            margin="dense"
+            name="viewers"
+            label="Number of people watching"
+            type="tel"
+            fullWidth
+            required
+            onChange={onChange}
+          />
+          <TextField
+            margin="dense"
+            name="pin"
+            label="PIN Code"
+            type="password"
+            fullWidth
+            required
+            onChange={onChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <DialogContent>
+          <DialogContentText>
+            This is the dialog
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="pin"
+            label="PIN Code"
+            type="password"
+            fullWidth
+            required
+            onChange={onChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </div>
+    )
+  }
+};
 
 class App extends Component {
 
   state = {
-    open: false,
-    liveVideoAvailable: false,
+    openDialog: false,
+    userVerified: false,
     isLoading: false,
+    typeOfMeeting: '',
     name: '',
     viewers: '',
+    pin: '',
     now: new Date(),
   };
 
@@ -101,8 +206,16 @@ class App extends Component {
       .then((response) => response.json)
   };
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
+  handleClickOpenLive = () => {
+    this.setState({ openDialog: true, typeOfMeeting: 'live' });
+  };
+
+  handleClickOpenMidweek = () => {
+    this.setState({ openDialog: true, typeOfMeeting: 'midweek' });
+  };
+
+  handleClickOpenWeekend = () => {
+    this.setState({ openDialog: true, typeOfMeeting: 'weekend' });
   };
 
   handleChange = (e) => {
@@ -112,46 +225,54 @@ class App extends Component {
   };
 
   handleSubmit = () => {
-    const { name, viewers, now } = this.state;
+    const { name, viewers, pin, now } = this.state;
 
     this.setState({
       now: new Date(),
     });
 
-    this.postData({"name": name, "viewers": viewers, "time-date": now });
-    this.setState({
-      liveVideoAvailable: true
-    })
+    // this.postData({"name": name, "viewers": viewers, "time-date": now });
+
+    if (pin == '8318') {
+      this.setState({
+        userVerified: true
+      })
+    } else {
+      this.setState({
+        openDialog: false
+      })
+    };
+
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({ openDialog: false });
   };
 
   render() {
-    const { open, liveVideoAvailable } = this.state;
+    const { openDialog, userVerified, typeOfMeeting } = this.state;
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <h1>Wellington City Congregation</h1>
+        <h1>Wellington City</h1>
 
         <ul className={classes.streams}>
-          <li className={classes.item}>
+          <li className={classes.item} onClick={this.handleClickOpenLive}>
             <div className={classes.details}>
               <h2>LIVE</h2>
               <p>Live streaming video of today's meeting</p>
             </div>
             <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_2_md.jpg' />
           </li>
-          <li className={classes.item}>
+          <li className={classes.item} onClick={this.handleClickOpenMidweek}>
             <div className={classes.details}>
               <h2>MIDWEEK</h2>
               <p>Treasures from God's word, Apply yourself to the Field Ministry, Living as Christians</p>
             </div>
             <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_3_md.jpg' />
           </li>
-          <li className={classes.item}>
+          <li className={classes.item} onClick={this.handleClickOpenWeekend}>
             <div className={classes.details}>
               <h2>WEEKEND</h2>
               <p>Public talk and Watchtower Study</p>
@@ -160,46 +281,16 @@ class App extends Component {
           </li>
         </ul>
 
-        <Dialog open={open} onClose={this.handleClose}>
+        <Dialog open={openDialog} onClose={this.handleClose}>
           <DialogTitle>Dialog</DialogTitle>
 
-          {liveVideoAvailable ?
-            <DialogContent><LiveStreamButton classes={classes}/></DialogContent> :
-            <div>
-              <DialogContent>
-                <DialogContentText>
-                  This is the dialog
-                </DialogContentText>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  name="name"
-                  label="Full name"
-                  type="text"
-                  fullWidth
-                  required
-                  onChange={this.handleChange}
-                />
-                <TextField
-                  margin="dense"
-                  name="viewers"
-                  label="Number of people watching"
-                  type="tel"
-                  fullWidth
-                  required
-                  onChange={this.handleChange}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={this.handleClose} color="primary">
-                Cancel
-                </Button>
-                <Button onClick={this.handleSubmit} color="primary">
-                Submit
-                </Button>
-              </DialogActions>
-            </div>
+          {
+            userVerified ?
+              <VerifiedDialog type={typeOfMeeting} classes={classes} handleClose={this.handleClose}/>
+              :
+              <Form classes={classes} onChange={this.handleChange} handleClose={this.handleClose} handleSubmit={this.handleSubmit} type={typeOfMeeting}/>
           }
+
         </Dialog>
       </div>
     );
