@@ -9,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-
 const API = "http://localhost:4000/links";
 
 const styles = {
@@ -64,7 +63,17 @@ const styles = {
     '@media (min-width: 1024px)': {
       margin: '20px'
     }
-  }
+  },
+  error: {
+    color: 'red'
+  },
+  '@media (max-width: 767px)': {
+    item: {
+      height: '120px',
+      width: '100%',
+      margin: '10px 0',
+    },
+  },
 };
 
 const VerifiedDialog = ({ classes, type, handleClose }) => {
@@ -74,42 +83,83 @@ const VerifiedDialog = ({ classes, type, handleClose }) => {
 
   let linkFinal;
 
-  if(type == 'live') {
+  if(type === 'live') {
     linkFinal = liveLink
   };
 
-  if(type == 'midweek') {
+  if(type === 'midweek') {
     linkFinal = midweekLink
   };
 
-  if(type == 'weekend') {
+  if(type === 'weekend') {
     linkFinal = weekendLink
   };
 
   return (
-    <DialogContent>
-      <Button
-        onClick={handleClose}
-        variant="contained"
-        size="large"
-        color="primary"
-        target="_blank"
-        className={classes.button}
-        href={linkFinal}>
-        Watch Now
-      </Button>
-    </DialogContent>
+    <div>
+      <DialogTitle>Thank You</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Enjoy the meeting
+        </DialogContentText>
+        <Button
+          onClick={handleClose}
+          variant="contained"
+          size="large"
+          color="primary"
+          target="_blank"
+          className={classes.button}
+          href={linkFinal}>
+          Watch Now
+        </Button>
+      </DialogContent>
+    </div>
   );
 };
 
-const Form = ({ classes, type, onChange, handleClose, handleSubmit }) => {
+const PinCodeField = ({ classes, pinFailed, onChange, autoFocus }) => (
+  <div>
+    <TextField
+      autoFocus={autoFocus}
+      margin="dense"
+      name="pin"
+      label="PIN Code"
+      type="tel"
+      pattern="[0-9]*"
+      fullWidth
+      required
+      onChange={onChange}
+    />
+    { pinFailed ? <PinError classes={classes}/> : '' }
+  </div>
+);
 
-  if (type == 'live') {
+const PinError = ({ classes }) => (
+  <DialogContentText className={classes.error}>
+    Incorrect PIN code
+  </DialogContentText>
+);
+
+const FormButtons = ({ handleClose, handleSubmit }) => (
+  <DialogActions>
+    <Button onClick={handleClose} color="primary">
+      Cancel
+    </Button>
+    <Button onClick={handleSubmit} color="primary">
+      Submit
+    </Button>
+  </DialogActions>
+);
+
+const Form = ({ classes, type, onChange, handleClose, handleSubmit, pinFailed }) => {
+
+  if (type === 'live') {
     return (
       <div>
+        <DialogTitle>Verification</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This is the dialog
+            Please fill in the following details
           </DialogContentText>
           <TextField
             autoFocus
@@ -130,52 +180,22 @@ const Form = ({ classes, type, onChange, handleClose, handleSubmit }) => {
             required
             onChange={onChange}
           />
-          <TextField
-            margin="dense"
-            name="pin"
-            label="PIN Code"
-            type="password"
-            fullWidth
-            required
-            onChange={onChange}
-          />
+          <PinCodeField classes={classes} pinFailed={pinFailed} onChange={onChange}/>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Submit
-          </Button>
-        </DialogActions>
+        <FormButtons handleClose={handleClose} handleSubmit={handleSubmit}/>
       </div>
     )
   } else {
     return (
       <div>
+        <DialogTitle>Verification</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This is the dialog
+            Please enter the PIN code
           </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="pin"
-            label="PIN Code"
-            type="password"
-            fullWidth
-            required
-            onChange={onChange}
-          />
+          <PinCodeField classes={classes} pinFailed={pinFailed} onChange={onChange} autoFocus/>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Submit
-          </Button>
-        </DialogActions>
+        <FormButtons handleClose={handleClose} handleSubmit={handleSubmit}/>
       </div>
     )
   }
@@ -187,6 +207,7 @@ class App extends Component {
     openDialog: false,
     userVerified: false,
     isLoading: false,
+    pinFailed: false,
     typeOfMeeting: '',
     name: '',
     viewers: '',
@@ -233,24 +254,35 @@ class App extends Component {
 
     // this.postData({"name": name, "viewers": viewers, "time-date": now });
 
-    if (pin == '8318') {
+    if (pin === '8318') {
       this.setState({
         userVerified: true
       })
     } else {
       this.setState({
-        openDialog: false
+        //openDialog: false
+        pinFailed: true,
+        pin: '',
       })
     };
 
   };
 
   handleClose = () => {
-    this.setState({ openDialog: false });
+    this.setState({
+      openDialog: false,
+      userVerified: false,
+      isLoading: false,
+      pinFailed: false,
+      typeOfMeeting: '',
+      name: '',
+      viewers: '',
+      pin: '',
+    });
   };
 
   render() {
-    const { openDialog, userVerified, typeOfMeeting } = this.state;
+    const { openDialog, userVerified, typeOfMeeting, pinFailed } = this.state;
     const { classes } = this.props;
 
     return (
@@ -263,34 +295,42 @@ class App extends Component {
               <h2>LIVE</h2>
               <p>Live streaming video of today's meeting</p>
             </div>
-            <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_2_md.jpg' />
+            <img className={classes.image}
+                 src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_2_md.jpg'
+                 alt='Meeting'/>
           </li>
           <li className={classes.item} onClick={this.handleClickOpenMidweek}>
             <div className={classes.details}>
               <h2>MIDWEEK</h2>
               <p>Treasures from God's word, Apply yourself to the Field Ministry, Living as Christians</p>
             </div>
-            <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_3_md.jpg' />
+            <img className={classes.image}
+                 src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_3_md.jpg'
+                 alt='Meeting'/>
           </li>
           <li className={classes.item} onClick={this.handleClickOpenWeekend}>
             <div className={classes.details}>
               <h2>WEEKEND</h2>
               <p>Public talk and Watchtower Study</p>
             </div>
-            <img className={classes.image} src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_1_md.jpg' />
+            <img className={classes.image}
+                 src='https://assetsnffrgf-a.akamaihd.net/assets/m/1102012148/univ/art/1102012148_univ_cnt_1_md.jpg'
+                 alt='Meeting'/>
           </li>
         </ul>
 
         <Dialog open={openDialog} onClose={this.handleClose}>
-          <DialogTitle>Dialog</DialogTitle>
-
           {
             userVerified ?
               <VerifiedDialog type={typeOfMeeting} classes={classes} handleClose={this.handleClose}/>
               :
-              <Form classes={classes} onChange={this.handleChange} handleClose={this.handleClose} handleSubmit={this.handleSubmit} type={typeOfMeeting}/>
+              <Form classes={classes}
+                    pinFailed={pinFailed}
+                    onChange={this.handleChange}
+                    handleClose={this.handleClose}
+                    handleSubmit={this.handleSubmit}
+                    type={typeOfMeeting}/>
           }
-
         </Dialog>
       </div>
     );
