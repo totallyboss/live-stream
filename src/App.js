@@ -9,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-const API = "http://localhost:4000/links";
+const API = "https://x7sifk7gkl.execute-api.us-east-1.amazonaws.com/Prod/new-viewer";
 
 const styles = {
   '@global body': {
@@ -216,6 +216,7 @@ class App extends Component {
   };
 
   postData = (data) => {
+    console.log(data);
     let options = {
       method: 'POST',
       headers: {
@@ -246,13 +247,15 @@ class App extends Component {
   };
 
   handleSubmit = () => {
-    const { name, viewers, pin, now } = this.state;
+    const { name, viewers, pin, now, typeOfMeeting } = this.state;
 
     this.setState({
       now: new Date(),
     });
 
-    // this.postData({"name": name, "viewers": viewers, "time-date": now });
+    if (typeOfMeeting === 'live') {
+      this.postData({"viewer_name": name, "viewer_count": viewers, "datetime": now.toString() });
+    };
 
     if (pin === '8318') {
       this.setState({
