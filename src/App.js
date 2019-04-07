@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import 'typeface-roboto';
 import withStyles from 'react-jss';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import VerifiedDialog from './VerifiedDialog';
+import Form from './Form';
 
 const API = "https://x7sifk7gkl.execute-api.us-east-1.amazonaws.com/Prod/new-viewer";
 
@@ -74,131 +70,6 @@ const styles = {
       margin: '10px 0',
     },
   },
-};
-
-const VerifiedDialog = ({ classes, type, handleClose }) => {
-  const liveLink = 'http://tiny.cc/wgtncitylivestream';
-  const midweekLink = 'http://tiny.cc/wgtncitymidweek';
-  const weekendLink = 'http://tiny.cc/wgtncityweekend';
-
-  let linkFinal;
-
-  if(type === 'live') {
-    linkFinal = liveLink
-  };
-
-  if(type === 'midweek') {
-    linkFinal = midweekLink
-  };
-
-  if(type === 'weekend') {
-    linkFinal = weekendLink
-  };
-
-  return (
-    <div>
-      <DialogTitle>Thank You</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Enjoy the meeting
-        </DialogContentText>
-        <Button
-          onClick={handleClose}
-          variant="contained"
-          size="large"
-          color="primary"
-          target="_blank"
-          className={classes.button}
-          href={linkFinal}>
-          Watch Now
-        </Button>
-      </DialogContent>
-    </div>
-  );
-};
-
-const PinCodeField = ({ classes, pinFailed, onChange, autoFocus }) => (
-  <div>
-    <TextField
-      autoFocus={autoFocus}
-      margin="dense"
-      name="pin"
-      label="PIN Code"
-      type="tel"
-      pattern="[0-9]*"
-      fullWidth
-      required
-      onChange={onChange}
-    />
-    { pinFailed ? <PinError classes={classes}/> : '' }
-  </div>
-);
-
-const PinError = ({ classes }) => (
-  <DialogContentText className={classes.error}>
-    Incorrect PIN code
-  </DialogContentText>
-);
-
-const FormButtons = ({ handleClose, handleSubmit }) => (
-  <DialogActions>
-    <Button onClick={handleClose} color="primary">
-      Cancel
-    </Button>
-    <Button onClick={handleSubmit} color="primary">
-      Submit
-    </Button>
-  </DialogActions>
-);
-
-const Form = ({ classes, type, onChange, handleClose, handleSubmit, pinFailed }) => {
-
-  if (type === 'live') {
-    return (
-      <div>
-        <DialogTitle>Verification</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please fill in the following details
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="name"
-            label="Full name"
-            type="text"
-            fullWidth
-            required
-            onChange={onChange}
-          />
-          <TextField
-            margin="dense"
-            name="viewers"
-            label="Number of people watching"
-            type="tel"
-            fullWidth
-            required
-            onChange={onChange}
-          />
-          <PinCodeField classes={classes} pinFailed={pinFailed} onChange={onChange}/>
-        </DialogContent>
-        <FormButtons handleClose={handleClose} handleSubmit={handleSubmit}/>
-      </div>
-    )
-  } else {
-    return (
-      <div>
-        <DialogTitle>Verification</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please enter the PIN code
-          </DialogContentText>
-          <PinCodeField classes={classes} pinFailed={pinFailed} onChange={onChange} autoFocus/>
-        </DialogContent>
-        <FormButtons handleClose={handleClose} handleSubmit={handleSubmit}/>
-      </div>
-    )
-  }
 };
 
 class App extends Component {
