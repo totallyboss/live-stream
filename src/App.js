@@ -5,7 +5,7 @@ import Dialog from '@material-ui/core/Dialog';
 import VerifiedDialog from './VerifiedDialog';
 import Form from './Form';
 
-const API = "https://x7sifk7gkl.execute-api.us-east-1.amazonaws.com/Prod/new-viewer";
+
 
 const styles = {
   '@global body': {
